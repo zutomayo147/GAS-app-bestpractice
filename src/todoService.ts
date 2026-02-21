@@ -12,7 +12,7 @@ export class TodoService {
         if (!data) return [];
         try {
             return JSON.parse(data) as Todo[];
-        } catch (e) {
+        } catch {
             return [];
         }
     }
