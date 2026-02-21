@@ -4,25 +4,54 @@ const TODOS_KEY = 'todo_app_data';
 
 export class TodoService {
     /**
-     * Get all todos from PropertiesService
+     * Get all todos from CacheService, fallback to PropertiesService
      */
     static getTodos(): Todo[] {
+        const cache = CacheService.getUserCache();
+        const cachedData = cache?.get(TODOS_KEY);
+
+        if (cachedData) {
+            try {
+                return JSON.parse(cachedData) as Todo[];
+            } catch (error) {
+                console.warn('Failed to parse cached todos', error);
+                // Continue to properties service if cache parsing fails
+            }
+        }
+
         const properties = PropertiesService.getUserProperties();
         const data = properties.getProperty(TODOS_KEY);
+
         if (!data) return [];
+
         try {
-            return JSON.parse(data) as Todo[];
-        } catch {
+            const todos = JSON.parse(data) as Todo[];
+            // Update cache after reading from properties
+            cache?.put(TODOS_KEY, data, 21600); // Cache for 6 hours (max)
+            return todos;
+        } catch (error) {
+            console.error('Failed to parse todos from PropertiesService', error);
             return [];
         }
     }
 
     /**
-     * Save todos to PropertiesService
+     * Save todos to both CacheService and PropertiesService
      */
     static saveTodos(todos: Todo[]): void {
+        const dataStr = JSON.stringify(todos);
+
+        // Save to properties
         const properties = PropertiesService.getUserProperties();
-        properties.setProperty(TODOS_KEY, JSON.stringify(todos));
+        properties.setProperty(TODOS_KEY, dataStr);
+
+        // Save to cache
+        const cache = CacheService.getUserCache();
+        try {
+            cache?.put(TODOS_KEY, dataStr, 21600);
+        } catch (error) {
+            console.warn('Failed to update cache', error);
+        }
     }
 
     /**

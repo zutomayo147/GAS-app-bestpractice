@@ -1,8 +1,15 @@
 import { TodoService } from './todoService';
 
-declare let global: any;
+// Extend the global object to hold GAS entry points properly
+declare global {
+    var doGet: (e: GoogleAppsScript.Events.DoGet) => GoogleAppsScript.HTML.HtmlOutput;
+    var getTodos: () => string;
+    var addTodo: (title: string) => string;
+    var toggleTodo: (id: string) => string;
+    var deleteTodo: (id: string) => string;
+}
 
-global.doGet = (_e: any) => {
+global.doGet = (_e: GoogleAppsScript.Events.DoGet) => {
     return HtmlService.createHtmlOutputFromFile('index')
         .setTitle('React ToDo App')
         .addMetaTag('viewport', 'width=device-width, initial-scale=1');
