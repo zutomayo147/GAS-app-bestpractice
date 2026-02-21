@@ -1,0 +1,11 @@
+# Dependencies / build artifacts
+**/node_modules/
+**/dist/
+**/coverage/
+
+# Lock files
+package-lock.json
+
+# Playwright
+**/test-results/
+**/playwright-report/
