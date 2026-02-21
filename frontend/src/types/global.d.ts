@@ -1,17 +1,14 @@
 export {};
 
 declare global {
-  interface Window {
-    google: {
-      script: {
-        run: {
-          withSuccessHandler: (callback: (response: any) => void) => {
-            withFailureHandler: (callback: (error: Error) => void) => {
-              createPresentationFromFrontend: (jsonData: string, settingsJson: string) => void;
+    interface Window {
+        google: {
+            script: {
+                run: {
+                    withSuccessHandler: (callback: (response: string) => void) => unknown;
+                    withFailureHandler: (callback: (error: Error) => void) => unknown;
+                } & Record<string, unknown>;
             };
-          };
         };
-      };
-    };
-  }
+    }
 }
